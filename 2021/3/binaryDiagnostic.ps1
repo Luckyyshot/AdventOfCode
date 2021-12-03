@@ -90,26 +90,3 @@ Function OxygenCO2{
 
 EpsilonGamma
 OxygenCO2
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
