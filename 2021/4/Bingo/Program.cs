@@ -6,52 +6,59 @@ namespace Bingo
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            BingoBoard lastWinner = new BingoBoard();
             string[] input = System.IO.File.ReadAllText(@"D:\Repositories\AdventOfCode\2021\4\input.txt").Split("\r\n\r\n");
-            List<BingoBoard> players = new List<BingoBoard>();
+
+            List<BingoBoard> playersPart1 = new();
+            List<BingoBoard> playersPart2 = new();
+
             for (int i = 1; i < input.Length; i++)
             {
-                players.Add(new BingoBoard(input[i]));
+                playersPart1.Add(new BingoBoard(input[i]));
+                playersPart2.Add(new BingoBoard(input[i]));
             }
+
+            //Part1
             foreach (var num in input[0].Split(','))
             {
-                foreach (var player in players)
+                foreach (var player in playersPart1)
                 {
-                    player.markNumber(int.Parse(num));
+                    player.MarkNumber(int.Parse(num));
                 }
-                foreach (var player in players)
+
+                IEnumerable<BingoBoard> winner = from player in playersPart1 where player.ValidateWinner() select player;
+                if(winner.Any())
                 {
-                    if (player.validateWinner())
-                    {
-                        player.winner = true;
-                    }
-                    if (!lastWinner.Empty && lastWinner.winner)
-                    {
-                        Console.WriteLine(num);
-                        Console.WriteLine(lastWinner.getUnmarkedNumbers().Sum());
-                        Console.WriteLine($"Final score: {lastWinner.getUnmarkedNumbers().Sum() * int.Parse(num)}");
-                        goto Finish;
-                    }
-                }
-                int winnerCount = 0;
-                foreach (var player in players)
-                {
-                    if (player.winner)
-                        winnerCount++;
-                }
-                if(winnerCount == players.Count - 1)
-                {
-                    foreach (var player in players)
-                    {
-                        if (!player.winner)
-                            lastWinner = player;
-                    }
+                    Console.WriteLine($"Final score part 1: {winner.First().GetUnmarkedNumbers().Sum() * int.Parse(num)}");
+                    goto Part2;
                 }
             }
-            Finish:
-            Console.WriteLine("search done");
+
+            //Part2
+            Part2:
+            BingoBoard lastWinner = new();
+            foreach (var num in input[0].Split(','))
+            {
+                foreach (var player in playersPart2)
+                {
+                    player.MarkNumber(int.Parse(num));
+                }
+
+                if(!lastWinner.Empty && lastWinner.ValidateWinner())
+                {
+                    Console.WriteLine($"Final score part 2: {lastWinner.GetUnmarkedNumbers().Sum() * int.Parse(num)}");
+                    goto Finish;
+                }
+
+                IEnumerable<BingoBoard> winners = from player in playersPart2 where player.ValidateWinner() select player;
+
+                if(winners.Count() == playersPart2.Count - 1)
+                {
+                    lastWinner = (from player in playersPart2 where !player.ValidateWinner() select player).First();
+                }
+            }
+        Finish:;
         }
     }
 }
