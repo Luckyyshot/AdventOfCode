@@ -25,39 +25,14 @@ namespace HydrothermalVenture
 
         public void addLinesegment((int, int) start, (int, int) end, bool linearOnly)
         {
-            if(start.Item1 == end.Item1)
+            int xDirection = (end.Item1 - start.Item1) == 0 ? 0 : (end.Item1 - start.Item1) / Math.Abs(end.Item1 - start.Item1);
+            int yDirection = (end.Item2 - start.Item2) == 0 ? 0 : (end.Item2 - start.Item2) / Math.Abs(end.Item2 - start.Item2);
+
+            for (int i = 0; i <= Math.Max(Math.Abs(end.Item1 - start.Item1), Math.Abs(end.Item2 - start.Item2)); i++)
             {
-                for (int i = 0; i <= Math.Abs(end.Item2 - start.Item2); i++)
-                {
-                    grid[start.Item1][Math.Min(end.Item2, start.Item2) + i]++;
-                }
-            }
-            else if (start.Item2 == end.Item2)
-            {
-                for (int i = 0; i <= Math.Abs(end.Item1 - start.Item1); i++)
-                {
-                    grid[Math.Min(end.Item1, start.Item1) + i][start.Item2]++;
-                }
-            }
-            else if (!linearOnly)
-            {
-                for (int i = 0; i <= Math.Abs(end.Item1 - start.Item1); i++)
-                {
-                    if(start.Item1 < end.Item1)
-                    {
-                        if(start.Item2 < end.Item2)
-                            grid[start.Item1 + i][start.Item2 + i]++;
-                        else
-                            grid[start.Item1 + i][start.Item2 - i]++;
-                    }
-                    else
-                    {
-                        if (start.Item2 < end.Item2)
-                            grid[start.Item1 - i][start.Item2 + i]++;
-                        else
-                            grid[start.Item1 - i][start.Item2 - i]++;
-                    }
-                }
+                if (linearOnly && !(xDirection == 0 || yDirection == 0))
+                    break;
+                grid[start.Item1 + i * xDirection][start.Item2 + i * yDirection]++;
             }
         }
 
